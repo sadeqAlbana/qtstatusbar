@@ -25,10 +25,11 @@
 
 #include <QObject>
 #include <QColor>
-
+#include <QQmlEngine>
 class StatusBar : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
     Q_PROPERTY(bool available READ isAvailable CONSTANT)
     Q_PROPERTY(QColor color READ color WRITE setColor)
     Q_PROPERTY(Theme theme READ theme WRITE setTheme)
@@ -46,6 +47,10 @@ public:
 
     static Theme theme();
     static void setTheme(Theme theme);
+
+signals:
+    void colorChanged();
+    void themeChanged();
 };
 
 #endif // STATUSBAR_H

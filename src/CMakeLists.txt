@@ -1,16 +1,17 @@
 cmake_minimum_required(VERSION 3.1)
-project(StatusBar LANGUAGES CXX)
+project(statusBar LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Qt5 REQUIRED
+find_package(Qt6 REQUIRED
     Core
     Gui
+    Quick
     )
     
 # prevent error "You must build your code with position independent code if Qt was built with..
-if (Qt5_POSITION_INDEPENDENT_CODE)
+if (Qt6_POSITION_INDEPENDENT_CODE)
   SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
@@ -29,16 +30,22 @@ set(STATUSBAR_PLATFORM_LIBS "-framework UIKit")
 else()
 set(STATUSBAR_PLATFORM_SOURCES statusbar_dummy.cpp)
 endif()
-find_package(Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Core Gui REQUIRED)
 
-add_library(${PROJECT_NAME} OBJECT
-    ${STATUSBAR_COMMON_SOURCES}
-    ${STATUSBAR_PLATFORM_SOURCES}
-    )
-target_link_libraries(StatusBar PRIVATE Qt5::Core Qt5::Gui ${STATUSBAR_PLATFORM_LIBS})
+qt_add_library(${PROJECT_NAME} STATIC)
+qt_add_qml_module(${PROJECT_NAME}
+    URI "StatusBar"
+    VERSION 1.0
+    SOURCES
+        ${STATUSBAR_COMMON_SOURCES}
+        ${STATUSBAR_PLATFORM_SOURCES}
 
-target_include_directories(StatusBar PUBLIC
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Gui Qt6::Quick ${STATUSBAR_PLATFORM_LIBS})
+
+target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
-    $<TARGET_PROPERTY:Qt5::Core,INTERFACE_INCLUDE_DIRECTORIES>
-    $<TARGET_PROPERTY:Qt5::Gui,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Qt6::Core,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Qt6::Gui,INTERFACE_INCLUDE_DIRECTORIES>
     )
